@@ -121,8 +121,10 @@ function updateBoardTotals(boardGrid, rows, columns) {
 
       const leftInput = cell.querySelector(".cell-top input:first-of-type");
       const rightInput = cell.querySelector(".cell-top input:last-of-type");
-      const leftValue = parseInt(leftInput?.value, 10) || 0;
-      const rightValue = parseInt(rightInput?.value, 10) || 0;
+      const leftValue =
+        leftInput?.value === "" ? -1 : parseInt(leftInput?.value, 10);
+      const rightValue =
+        rightInput?.value === "" ? -1 : parseInt(rightInput?.value, 10);
 
       const aboveCell = boardGrid.querySelector(
         `div[data-row="${r - 1}"][data-col="${c}"]`,
@@ -132,14 +134,16 @@ function updateBoardTotals(boardGrid, rows, columns) {
 
       let total = aboveValue;
 
-      if (leftValue === rightValue && leftValue !== 0) {
+      console.log(leftValue);
+      if (leftValue === -1 && rightValue === -1) {
+        total = "";
+      } else if (leftValue === rightValue) {
         total += 5 + leftValue * 3;
-      }
-      if (leftValue !== rightValue && leftValue !== 0) {
+      } else if (leftValue !== rightValue && leftValue !== 0) {
         total -= Math.abs(leftValue - rightValue) * 3;
       }
 
-      rowValues.push(total);
+      rowValues.push(leftValue === -1 ? 0 : leftValue);
 
       const mainText = cell.querySelector(".main-text");
       if (mainText) {
@@ -147,6 +151,34 @@ function updateBoardTotals(boardGrid, rows, columns) {
       }
     }
     matrix.push(rowValues);
+  }
+
+  for (let r = 1; r <= rows * 2 - 1; r += 1) {
+    let total_row_val = 0;
+    for (let c = 1; c <= columns; c += 1) {
+      const value = matrix[r - 1] ? matrix[r - 1][c - 1] : 0;
+      total_row_val += value;
+    }
+    console.log(total_row_val);
+    if (total_row_val === (r <= rows ? r : rows - r + rows)) {
+      for (let c = 1; c <= columns; c += 1) {
+        const cell = boardGrid.querySelector(
+          `div[data-row="${r}"][data-col="${c}"]`,
+        );
+        if (cell && cell.classList.contains("dealer")) {
+          cell.className = "dealer_wrong";
+        }
+      }
+    } else {
+      for (let c = 1; c <= columns; c += 1) {
+        const cell = boardGrid.querySelector(
+          `div[data-row="${r}"][data-col="${c}"]`,
+        );
+        if (cell && cell.classList.contains("dealer_wrong")) {
+          cell.className = "dealer";
+        }
+      }
+    }
   }
 
   return matrix;

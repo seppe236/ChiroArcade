@@ -230,6 +230,17 @@ main {
   flex-direction: column;
 }
 
+.dealer_wrong {
+  position: relative;
+  background: rgba(255, 0, 0, 0.06);
+  border: 1px solid rgba(255, 0, 0, 0.671);
+  border-radius: 14px;
+  min-height: 90px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
 .cell-top {
   display: flex;
   gap: 6px;
