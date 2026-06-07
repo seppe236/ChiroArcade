@@ -60,13 +60,43 @@ async function loadWordsFromFirebase() {
 }
 
 function setupNewGame() {
-  // 1. Kies een random woord uit de opgehaalde Firebase lijst
+  // 1. Haal de geschiedenis van gespeelde woorden op
+  let playedWords =
+    JSON.parse(localStorage.getItem("imposterPlayedWords")) || [];
+
+  // 2. Filter de woorden die al in de geschiedenis staan eruit
+  let availableWords = fetchedWords.filter(
+    (item) => !playedWords.includes(item.word),
+  );
+
+  // 3. Als alle woorden een keer gespeeld zijn (of de lijst leeg is), resetten we de geschiedenis
+  if (availableWords.length === 0) {
+    playedWords = [];
+    availableWords = fetchedWords;
+  }
+
+  // 4. Kies een random woord uit de *overgebleven* beschikbare lijst
   const randomPick =
-    fetchedWords[Math.floor(Math.random() * fetchedWords.length)];
+    availableWords[Math.floor(Math.random() * availableWords.length)];
   currentWord = randomPick.word;
   currentHint = hintEnabled ? randomPick.hint : null;
 
-  // 2. Bepaal random imposters
+  // 5. Voeg dit nieuwe woord toe aan de geschiedenis
+  playedWords.push(currentWord);
+
+  // 6. Beperk de geschiedenis tot een maximum (bijv. de helft van het totale aantal woorden)
+  // Dit voorkomt dat we ooit helemaal vastlopen, zelfs bij een kleine lijst
+  const maxHistoryLength = Math.max(1, Math.floor(fetchedWords.length / 2));
+  if (playedWords.length > maxHistoryLength) {
+    playedWords.shift(); // Verwijder het alleroudste woord
+  }
+
+  // Sla de bijgewerkte geschiedenis op in localStorage
+  localStorage.setItem("imposterPlayedWords", JSON.stringify(playedWords));
+
+  // --- De rest van je originele logica blijft hetzelfde ---
+
+  // 7. Bepaal random imposters
   imposterIndices = [];
   const availableIndices = gamePlayers.map((_, i) => i);
 
@@ -76,7 +106,7 @@ function setupNewGame() {
     availableIndices.splice(randomPos, 1);
   }
 
-  // 3. Bepaal een random startende speler
+  // 8. Bepaal een random startende speler
   currentPlayerGameIndex = 0;
   updateGameScreen();
 }
