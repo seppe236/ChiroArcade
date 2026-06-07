@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imposter - Instellingen</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link rel="stylesheet" href="imposter.css" />
+  </head>
+  <body>
+    <header>
+      <a href="home.html" class="nav-btn" title="Ga terug">
+        <i class="fi fi-rr-angle-left icon"></i>
+      </a>
+
+      <h1>Imposter</h1>
+
+      <a href="#add-words" class="nav-btn" title="Woorden toevoegen">
+        <i class="fi fi-rr-multiple"></i>
+      </a>
+    </header>
+
+    <main>
+      <div>
+        <div class="input-group">
+          <input
+            type="text"
+            id="playerName"
+            placeholder="Voer spelersnaam in..."
+            onkeypress="handleKeyPress(event)"
+          />
+          <button class="btn btn-add" onclick="addPlayer()">Toevoegen</button>
+        </div>
+
+        <div class="list-header">
+          <h3>Spelers</h3>
+          <button class="btn-text" onclick="clearPlayers()">
+            Verwijder alles
+          </button>
+        </div>
+
+        <ul class="player-list" id="playerList"></ul>
+      </div>
+
+      <div class="settings-row">
+        <span class="settings-label">Imposter krijgt een hint</span>
+        <label class="switch">
+          <input type="checkbox" id="hintToggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="btn btn-play" onclick="startGame()">Start Spel</button>
+    </main>
+
+    <div id="wordModal" class="modal-overlay">
+      <div class="modal-content">
+        <a href="#" class="close-btn"><i class="fi fi-rr-cross"></i></a>
+
+        <h2>Woord toevoegen</h2>
+
+        <div class="modal-inputs">
+          <input type="text" id="customWord" placeholder="Woord (bijv. mast)" />
+          <input type="text" id="customHint" placeholder="Hint (bijv. hoog)" />
+          <button
+            class="btn btn-add"
+            onclick="saveWordToFirebase()"
+            style="width: 100%; margin-top: 10px"
+          >
+            Opslaan
+          </button>
+        </div>
+
+        <div id="notification" class="notification hidden">
+          Woord succesvol toegevoegd!
+        </div>
+      </div>
+    </div>
+
+    <script src="imposter.js"></script>
+  </body>
+</html>
