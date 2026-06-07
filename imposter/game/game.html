@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imposter - Spel Bezig</title>
+    <link rel="stylesheet" href="game.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+  </head>
+  <body>
+    <div id="loadingScreen" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Woorden ophalen uit database...</p>
+    </div>
+
+    <header>
+      <a href="../imposter.html" class="nav-btn" id="quitGameBtn">
+        <span class="icon">
+          <i class="fi fi-rr-cross-circle"></i>
+        </span>
+      </a>
+      <h1>Imposter</h1>
+      <div class="spacer"></div>
+    </header>
+
+    <main>
+      <div class="game-info">
+        <p id="progressDisplay" class="progress-text">Speler 1 van X</p>
+        <h2 class="turn-text">Geef de gsm aan:</h2>
+        <h3 id="currentPlayerDisplay" class="current-player">Naam</h3>
+      </div>
+
+      <div class="flip-card" id="roleCard">
+        <div class="flip-card-inner" id="cardInner">
+          <div class="flip-card-front">
+            <span class="touch-icon"><i class="fi fi-rr-touch"></i></span>
+            <p>Tik om te draaien</p>
+          </div>
+          <div class="flip-card-back" id="cardBack">
+            <h2 id="roleTitle">Jouw woord is:</h2>
+            <p id="roleWord" class="secret-word">WOORD</p>
+            <p id="roleHint" class="secret-hint hidden"></p>
+          </div>
+        </div>
+      </div>
+
+      <button id="nextPlayerBtn" class="btn btn-play hidden">
+        Volgende Speler
+      </button>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>

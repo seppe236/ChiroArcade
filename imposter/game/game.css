@@ -1,0 +1,603 @@
+/* --- REGISTRATION OF MODERN ANIMATION ENGINES --- */
+@property --angle-cw {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --angle-ccw {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:root {
+  --bg-color: #03060e;
+  --accent-color: #fe2333; /* Imposter Rood */
+  --civilian-color: #00f0ff; /* Neon Cyaan voor de burger */
+  --text-color: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  touch-action: manipulation;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100dvh;
+  overflow: hidden;
+  background-image: radial-gradient(
+    circle at 50% -20%,
+    #111a2e 0%,
+    #03060e 70%
+  );
+}
+
+/* --- RUNTIME KEYFRAMES --- */
+@keyframes spinClockwise {
+  to {
+    --angle-cw: 360deg;
+  }
+}
+
+@keyframes spinCounterClockwise {
+  to {
+    --angle-ccw: -360deg;
+  }
+}
+
+/* --- LOADING OVERLAY --- */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  gap: 20px;
+  transition: opacity 0.4s ease;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- HEADER --- */
+header {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px 25px 10px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-btn {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(254, 35, 51, 0.3);
+  border-radius: 14px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover {
+  background-color: rgba(254, 35, 51, 0.1);
+  border-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #ffffff 0%, #a0a5b5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.spacer {
+  width: 50px;
+  flex-shrink: 0;
+}
+
+/* --- MAIN CONTENT --- */
+main {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 25px 30px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.game-info {
+  text-align: center;
+  width: 100%;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.turn-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.current-player {
+  font-size: 2.2rem;
+  color: #ffffff;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* --- FLIP CARD BASE SETUP --- */
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  max-width: 320px;
+  flex: 1;
+  perspective: 1200px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  min-height: 0;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  border: 2px solid transparent;
+}
+
+/* Layering isolation */
+.flip-card-front *,
+.flip-card-back * {
+  position: relative;
+  z-index: 10;
+}
+
+/* --- FRONT OF CARD (BASE + ANIMATIONS) --- */
+.flip-card-front {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  transform: translateZ(1px);
+
+  /* Very subtle static base grid */
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.015) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(254, 35, 51, 0.015) 1.5px, transparent 1.5px),
+    radial-gradient(circle at center, #070f1e 0%, #03070f 100%);
+  background-size:
+    20px 20px,
+    20px 20px,
+    auto;
+  background-position: center;
+}
+
+/* 1. FRONT: Glowing Tracers on the Grid (LESS INSIDE) */
+.flip-card-front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 22px;
+
+  /* Smoother center fade */
+  background-image:
+    radial-gradient(circle at center, #070f1e 20%, transparent 90%),
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--civilian-color) 25%,
+      transparent 50%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--accent-color) 25%,
+      transparent 50%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(black 1.5px, transparent 1.5px),
+    linear-gradient(90deg, black 1.5px, transparent 1.5px);
+  mask-image:
+    linear-gradient(black 1.5px, transparent 1.5px),
+    linear-gradient(90deg, black 1.5px, transparent 1.5px);
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  filter: blur(1px) drop-shadow(0 0 3px var(--civilian-color))
+    drop-shadow(0 0 3px var(--accent-color));
+
+  /* Dimmed heavily for "less inside" */
+  opacity: 0.2;
+
+  animation:
+    spinClockwise 5s linear infinite,
+    spinCounterClockwise 4s linear infinite;
+}
+
+/* 2. FRONT: Solid Outer Border (MORE OUTSIDE) */
+.flip-card-front::after {
+  content: "";
+  position: absolute;
+  inset: -4px; /* Pulled even further out */
+  z-index: 2;
+  border-radius: 28px; /* Adjusted to match the larger inset */
+  padding: 4px; /* Thicker solid border */
+
+  background-image:
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--civilian-color) 25%,
+      transparent 50%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--accent-color) 25%,
+      transparent 50%
+    );
+
+  -webkit-mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  mask-composite: exclude;
+
+  /* Intense outer glow */
+  filter: blur(1.5px) drop-shadow(0 0 12px var(--civilian-color))
+    drop-shadow(0 0 12px var(--accent-color));
+  opacity: 0.95;
+
+  animation:
+    spinClockwise 5s linear infinite,
+    spinCounterClockwise 4s linear infinite;
+}
+
+.touch-icon {
+  font-size: 3.5rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+
+.flip-card-front:hover .touch-icon {
+  opacity: 0.7;
+}
+
+/* --- BACK OF CARD: CIVILIAN (BASE + ANIMATIONS) --- */
+.flip-card-back {
+  color: white;
+  transform: rotateY(180deg) translateZ(1px);
+
+  /* Very subtle static base grid */
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.015) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.015) 1.5px, transparent 1.5px),
+    radial-gradient(circle at center, #0a1833 0%, #030710 100%);
+  background-size:
+    20px 20px,
+    20px 20px,
+    auto;
+  background-position: center;
+}
+
+/* 1. BACK CIVILIAN: Glowing Tracers (LESS INSIDE) */
+.flip-card-back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 22px;
+
+  /* Smoother center fade */
+  background-image:
+    radial-gradient(circle at center, #0a1833 20%, transparent 90%),
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--civilian-color) 20%,
+      transparent 45%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--civilian-color) 20%,
+      transparent 45%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(black 1.5px, transparent 1.5px),
+    linear-gradient(90deg, black 1.5px, transparent 1.5px);
+  mask-image:
+    linear-gradient(black 1.5px, transparent 1.5px),
+    linear-gradient(90deg, black 1.5px, transparent 1.5px);
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  filter: blur(1px) drop-shadow(0 0 2px var(--civilian-color));
+
+  /* Dimmed heavily for "less inside" */
+  opacity: 0.2;
+
+  animation:
+    spinClockwise 4.5s linear infinite,
+    spinCounterClockwise 3.5s linear infinite;
+}
+
+/* 2. BACK CIVILIAN: Solid Border (MORE OUTSIDE) */
+.flip-card-back::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  z-index: 2;
+  border-radius: 28px;
+  padding: 4px;
+
+  background-image:
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--civilian-color) 20%,
+      transparent 45%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--civilian-color) 20%,
+      transparent 45%
+    );
+
+  -webkit-mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff, #fff) content-box,
+    linear-gradient(#fff, #fff);
+  mask-composite: exclude;
+
+  /* Intense outer glow */
+  filter: blur(1.5px) drop-shadow(0 0 12px var(--civilian-color));
+  opacity: 0.95;
+
+  animation:
+    spinClockwise 4.5s linear infinite,
+    spinCounterClockwise 3.5s linear infinite;
+}
+
+.flip-card-back h2 {
+  font-size: 0.8rem;
+  color: rgba(0, 240, 255, 0.6);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 5px;
+}
+
+.secret-word {
+  font-size: 2.4rem;
+  font-weight: 900;
+  margin: 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+}
+
+.secret-hint {
+  font-size: 0.85rem;
+  color: #00f0ff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: rgba(0, 240, 255, 0.08);
+  padding: 8px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+/* --- BACK OF CARD: IMPOSTER (OVERRIDES) --- */
+.flip-card-back.imposter-bg {
+  background-image:
+    linear-gradient(rgba(254, 35, 51, 0.015) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(254, 35, 51, 0.015) 1.5px, transparent 1.5px),
+    radial-gradient(circle at center, #2e0509 0%, #040103 100%);
+}
+
+.flip-card-back.imposter-bg::before {
+  /* Smoother center fade */
+  background-image:
+    radial-gradient(circle at center, #2e0509 20%, transparent 90%),
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--accent-color) 20%,
+      transparent 45%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--accent-color) 20%,
+      transparent 45%
+    );
+
+  filter: blur(1px) drop-shadow(0 0 2px var(--accent-color));
+}
+
+.flip-card-back.imposter-bg::after {
+  background-image:
+    conic-gradient(
+      from var(--angle-cw) at center,
+      transparent,
+      var(--accent-color) 20%,
+      transparent 45%
+    ),
+    conic-gradient(
+      from var(--angle-ccw) at center,
+      transparent,
+      var(--accent-color) 20%,
+      transparent 45%
+    );
+
+  /* Intense outer glow */
+  filter: blur(1.5px) drop-shadow(0 0 12px var(--accent-color));
+}
+
+.flip-card-back.imposter-bg h2 {
+  color: rgba(254, 35, 51, 0.7);
+}
+
+.flip-card-back.imposter-bg .secret-word {
+  color: var(--accent-color);
+  text-shadow: 0 0 25px rgba(254, 35, 51, 0.7);
+}
+
+.flip-card-back.imposter-bg .secret-hint {
+  color: var(--accent-color);
+  background: rgba(254, 35, 51, 0.08);
+  border: 1px solid rgba(254, 35, 51, 0.3);
+  box-shadow: 0 0 15px rgba(254, 35, 51, 0.1);
+}
+
+/* --- PLAY BUTTON --- */
+.btn {
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  max-width: 320px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-play {
+  background: #ffffff;
+  color: #03060e;
+  margin-top: 10px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s ease,
+    opacity 0.4s ease,
+    background-color 0.3s;
+}
+
+.btn-play:hover {
+  background-color: #e5e8f0;
+}
+
+.btn-play:active {
+  transform: scale(0.97);
+}
+
+/* --- GLOBAL HIDDEN UTILITY --- */
+.hidden {
+  display: none !important;
+}
+
+/* --- STABLE LAYOUT CONSERVATION --- */
+#nextPlayerBtn.hidden {
+  display: block !important;
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}

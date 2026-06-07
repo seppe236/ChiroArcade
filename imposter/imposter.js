@@ -2,29 +2,45 @@
 const FIREBASE_DB_URL =
   "https://optical-wall-414323-default-rtdb.europe-west1.firebasedatabase.app";
 
-// --- SPELER MANAGEMENT, LOCAL STORAGE & DRAG AND DROP ---
-// Haal spelers uit localStorage, of start met een lege array als er nog niets is
+// --- SPELER MANAGEMENT & STORAGE ---
 let players = JSON.parse(localStorage.getItem("imposterPlayers")) || [];
 let dragStartIndex;
 
-// Zorg dat alles goed staat wanneer de pagina laadt
 window.addEventListener("load", () => {
   updatePlayerList();
   handleHashChange();
 
-  // Laad de opgeslagen status van de hint-toggle
   const savedHintState = localStorage.getItem("imposterHintState");
   if (savedHintState !== null) {
     document.getElementById("hintToggle").checked = savedHintState === "true";
   }
+
+  const savedImposterCount = localStorage.getItem("imposterCount");
+  if (savedImposterCount !== null) {
+    document.getElementById("imposterCount").value = savedImposterCount;
+  }
 });
 
-// Luister naar veranderingen van de hint-toggle en sla direct op
 document.getElementById("hintToggle").addEventListener("change", function () {
   localStorage.setItem("imposterHintState", this.checked);
 });
 
-// Hulpfunctie om spelers op te slaan
+function incrementImposters() {
+  const input = document.getElementById("imposterCount");
+  const currentValue = parseInt(input.value) || 1;
+  input.value = currentValue + 1;
+  localStorage.setItem("imposterCount", input.value);
+}
+
+function decrementImposters() {
+  const input = document.getElementById("imposterCount");
+  const currentValue = parseInt(input.value) || 1;
+  if (currentValue > 1) {
+    input.value = currentValue - 1;
+    localStorage.setItem("imposterCount", input.value);
+  }
+}
+
 function savePlayers() {
   localStorage.setItem("imposterPlayers", JSON.stringify(players));
 }
@@ -35,7 +51,7 @@ function addPlayer() {
 
   if (name !== "") {
     players.push(name);
-    savePlayers(); // Opslaan
+    savePlayers();
     updatePlayerList();
     input.value = "";
     input.focus();
@@ -44,19 +60,19 @@ function addPlayer() {
 
 function clearPlayers() {
   players = [];
-  savePlayers(); // Opslaan
+  savePlayers();
   updatePlayerList();
 }
 
 function removeSinglePlayer(index) {
   players.splice(index, 1);
-  savePlayers(); // Opslaan
+  savePlayers();
   updatePlayerList();
 }
 
 function updatePlayerList() {
   const ul = document.getElementById("playerList");
-  ul.innerHTML = ""; // Leeg de huidige lijst
+  ul.innerHTML = "";
 
   players.forEach((player, index) => {
     const li = document.createElement("li");
@@ -64,27 +80,33 @@ function updatePlayerList() {
     li.setAttribute("draggable", "true");
     li.setAttribute("data-index", index);
 
-    // Naam tekst
     const nameSpan = document.createElement("span");
     nameSpan.className = "player-name-text";
     nameSpan.textContent = player;
 
-    // Verwijder knop
     const removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.innerHTML = '<i class="fi fi-rr-trash"></i>';
-    removeBtn.onclick = () => removeSinglePlayer(index);
+    removeBtn.onclick = (e) => {
+      e.stopPropagation(); // Voorkomt dat drag-events vuren bij het klikken op prullenbak
+      removeSinglePlayer(index);
+    };
 
     li.appendChild(nameSpan);
     li.appendChild(removeBtn);
 
-    // Drag & Drop Event Listeners
+    // Desktop Muis Events
     li.addEventListener("dragstart", dragStart);
     li.addEventListener("dragover", dragOver);
     li.addEventListener("drop", dragDrop);
     li.addEventListener("dragenter", dragEnter);
     li.addEventListener("dragleave", dragLeave);
     li.addEventListener("dragend", dragEnd);
+
+    // Mobiel Touch Events (Zonder passive: false, zodat de browser standaard mag scrollen)
+    li.addEventListener("touchstart", touchStart, { passive: true });
+    li.addEventListener("touchmove", touchMove, { passive: false });
+    li.addEventListener("touchend", touchEnd);
 
     ul.appendChild(li);
   });
@@ -96,41 +118,115 @@ function handleKeyPress(event) {
   }
 }
 
-// --- DRAG & DROP FUNCTIES ---
-function dragStart(e) {
+// --- DESKTOP DRAG & DROP FUNCTIES ---
+function dragStart() {
   dragStartIndex = +this.getAttribute("data-index");
   this.classList.add("dragging");
 }
-
 function dragOver(e) {
   e.preventDefault();
 }
-
 function dragEnter(e) {
   e.preventDefault();
   this.classList.add("drag-over");
 }
-
 function dragLeave() {
   this.classList.remove("drag-over");
 }
-
 function dragDrop() {
   const dragEndIndex = +this.getAttribute("data-index");
   swapItems(dragStartIndex, dragEndIndex);
   this.classList.remove("drag-over");
 }
-
 function dragEnd() {
   this.classList.remove("dragging");
-  const items = document.querySelectorAll(".player-item");
-  items.forEach((item) => item.classList.remove("drag-over"));
+  document
+    .querySelectorAll(".player-item")
+    .forEach((item) => item.classList.remove("drag-over"));
+}
+
+// --- MOBIEL TOUCH DRAG & DROP LOGICA (MET LONG PRESS) ---
+let activeTouchItem = null;
+let touchTimer = null;
+let isLongPress = false;
+
+function touchStart(e) {
+  const target = this;
+  isLongPress = false;
+
+  // Start een timer van 400ms voor de long press
+  touchTimer = setTimeout(() => {
+    isLongPress = true;
+    activeTouchItem = target;
+    dragStartIndex = +target.getAttribute("data-index");
+    target.classList.add("dragging");
+
+    // Optioneel: Geef korte trilling als de telefoon dat ondersteunt (haptic feedback)
+    if (navigator.vibrate) navigator.vibrate(50);
+  }, 400);
+}
+
+function touchMove(e) {
+  // Als de long press nog niet is geactiveerd, annuleren we de timer zodra de vinger beweegt (gebruiker is aan het scrollen)
+  if (!isLongPress) {
+    clearTimeout(touchTimer);
+    return;
+  }
+
+  // Als we wel aan het slepen zijn, blokkeer dan het scrollen van de pagina
+  e.preventDefault();
+
+  const touch = e.touches[0];
+  const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+  if (!targetElement) return;
+
+  const itemOver = targetElement.closest(".player-item");
+
+  document
+    .querySelectorAll(".player-item")
+    .forEach((item) => item.classList.remove("drag-over"));
+
+  if (itemOver && itemOver !== activeTouchItem) {
+    itemOver.classList.add("drag-over");
+  }
+}
+
+function touchEnd(e) {
+  // Altijd de timer opruimen als de vinger van het scherm gaat
+  clearTimeout(touchTimer);
+
+  if (!isLongPress || !activeTouchItem) {
+    activeTouchItem = null;
+    return;
+  }
+
+  activeTouchItem.classList.remove("dragging");
+
+  const touch = e.changedTouches[0];
+  const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+  if (targetElement) {
+    const itemOver = targetElement.closest(".player-item");
+    if (itemOver) {
+      const dragEndIndex = +itemOver.getAttribute("data-index");
+      swapItems(dragStartIndex, dragEndIndex);
+    }
+  }
+
+  document
+    .querySelectorAll(".player-item")
+    .forEach((item) => item.classList.remove("drag-over"));
+
+  activeTouchItem = null;
+  isLongPress = false;
 }
 
 function swapItems(fromIndex, toIndex) {
+  if (fromIndex === toIndex) return;
   const itemToMove = players.splice(fromIndex, 1)[0];
   players.splice(toIndex, 0, itemToMove);
-  savePlayers(); // Sla de nieuwe volgorde op
+  savePlayers();
   updatePlayerList();
 }
 
@@ -141,15 +237,32 @@ function startGame() {
     return;
   }
   const hintEnabled = document.getElementById("hintToggle").checked;
-  console.log("Start spel met:", players, "Hint Aan:", hintEnabled);
+  const imposterCount =
+    parseInt(document.getElementById("imposterCount").value) || 1;
 
-  // window.location.href = "play.html";
+  // Validate imposter count doesn't exceed player count
+  if (imposterCount >= players.length) {
+    alert(
+      "Aantal imposters mag niet gelijk zijn aan of groter zijn dan het aantal spelers!",
+    );
+    return;
+  }
+
+  console.log(
+    "Start spel met:",
+    players,
+    "Hint Aan:",
+    hintEnabled,
+    "Imposters:",
+    imposterCount,
+  );
+  localStorage.setItem("currentImposterCount", imposterCount);
+  window.location.href = "game/game.html";
 }
 
 // --- MODAL & URL ROUTING ---
 function handleHashChange() {
   const modal = document.getElementById("wordModal");
-  // Controleer of de modal bestaat op deze pagina (veiligheidscheck)
   if (modal) {
     if (window.location.hash === "#add-words") {
       modal.classList.add("show");
@@ -158,7 +271,6 @@ function handleHashChange() {
     }
   }
 }
-
 window.addEventListener("hashchange", handleHashChange);
 
 // --- FIREBASE WOORDEN OPSLAAN ---

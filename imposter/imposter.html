@@ -13,14 +13,18 @@
   </head>
   <body>
     <header>
-      <a href="home.html" class="nav-btn" title="Ga terug">
-        <i class="fi fi-rr-angle-left icon"></i>
+      <a href="../index.html" class="nav-btn">
+        <span class="icon">
+          <i class="fi fi-rr-angle-left"></i>
+        </span>
       </a>
 
       <h1>Imposter</h1>
 
-      <a href="#add-words" class="nav-btn" title="Woorden toevoegen">
-        <i class="fi fi-rr-multiple"></i>
+      <a href="#add-words" class="nav-btn">
+        <span class="icon">
+          <i class="fi fi-rr-multiple"></i>
+        </span>
       </a>
     </header>
 
@@ -44,6 +48,15 @@
         </div>
 
         <ul class="player-list" id="playerList"></ul>
+      </div>
+
+      <div class="settings-row">
+        <span class="settings-label">Aantal imposters</span>
+        <div class="counter-control">
+          <button class="btn-counter" onclick="decrementImposters()">−</button>
+          <input type="number" id="imposterCount" value="1" min="1" readonly />
+          <button class="btn-counter" onclick="incrementImposters()">+</button>
+        </div>
       </div>
 
       <div class="settings-row">
