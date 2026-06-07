@@ -71,14 +71,14 @@ function renderGameGrid() {
       const topA = document.createElement("input");
       topA.type = "text";
       topA.maxLength = 3;
-      topA.value = "0";
+      topA.value = "";
       topA.inputMode = "numeric";
       topA.pattern = "[0-9]*";
 
       const topB = document.createElement("input");
       topB.type = "text";
       topB.maxLength = 3;
-      topB.value = "0";
+      topB.value = "";
       topB.inputMode = "numeric";
       topB.pattern = "[0-9]*";
 
