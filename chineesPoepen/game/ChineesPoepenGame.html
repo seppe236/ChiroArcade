@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chinees Poepen - Spel</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link rel="stylesheet" href="ChineesPoepenGame.css" />
+  </head>
+  <body>
+    <header>
+      <a
+        href="ChineesPoepen.html"
+        class="nav-btn"
+        aria-label="Terug naar instellingen"
+      >
+        <span class="icon"><i class="fi fi-rr-angle-left"></i></span>
+      </a>
+      <h1>Chinees Poepen</h1>
+      <span class="spacer"></span>
+    </header>
+
+    <main>
+      <div class="game-panel">
+        <div class="game-header">
+          <div>
+            <h2>Spelbord</h2>
+            <p class="note">
+              Horizontaal = spelers. Iedere cel heeft twee waarden en een kleine
+              plaatsmarkering.
+            </p>
+          </div>
+        </div>
+
+        <div id="gameMessage" class="message"></div>
+        <div class="grid-container" id="gridContainer"></div>
+      </div>
+    </main>
+
+    <script src="ChineesPoepenGame.js"></script>
+  </body>
+</html>

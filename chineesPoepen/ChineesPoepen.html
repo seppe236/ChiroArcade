@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chinees Poepen</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link rel="stylesheet" href="ChineesPoepen.css" />
+  </head>
+  <body>
+    <header>
+      <a href="../index.html" class="nav-btn" aria-label="Terug naar start">
+        <span class="icon"><i class="fi fi-rr-angle-left"></i></span>
+      </a>
+      <h1>Chinees Poepen</h1>
+      <span class="spacer"></span>
+    </header>
+
+    <main>
+      <div>
+        <div class="input-group">
+          <input
+            type="text"
+            id="playerName"
+            placeholder="Voer spelersnaam in..."
+            onkeypress="handleKeyPress(event)"
+          />
+          <button class="btn btn-add" onclick="addPlayer()">Toevoegen</button>
+        </div>
+
+        <div class="list-header">
+          <h3>Spelers</h3>
+          <button class="btn-text" onclick="clearPlayers()">
+            Verwijder alles
+          </button>
+        </div>
+
+        <ul class="player-list" id="playerList"></ul>
+
+        <div class="settings-row">
+          <span class="settings-label">Aantal rondes</span>
+          <div class="counter-control">
+            <button class="btn-counter" onclick="decrementRounds()">−</button>
+            <input type="number" id="roundCount" value="4" min="1" readonly />
+            <button class="btn-counter" onclick="incrementRounds()">+</button>
+          </div>
+        </div>
+
+        <button class="btn btn-play" onclick="startGame()">Start spel</button>
+      </div>
+    </main>
+
+    <script src="ChineesPoepen.js"></script>
+  </body>
+</html>

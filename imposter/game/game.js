@@ -199,7 +199,7 @@ document.getElementById("quitGameBtn").addEventListener("click", function (e) {
   }
 });
 
-document.addEventListener("click", function (event) {
+window.addEventListener("load", (event) => {
   // Request fullscreen on first card flip
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch(() => {

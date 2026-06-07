@@ -27,6 +27,11 @@
 }
 
 body {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard syntax */
+
   background-color: var(--bg-color);
   color: var(--text-color);
   display: flex;
@@ -600,4 +605,16 @@ main {
   visibility: hidden;
   pointer-events: none;
   opacity: 0;
+}
+
+#roleWord {
+  max-width: 90%;
+
+  /* 1. Fluid Typography: Shrink the text as the container gets smaller */
+  /* This scales between 1rem (min) and 2rem (max) based on viewport width */
+  font-size: clamp(1rem, 5vw, 2rem);
+
+  /* 2. Wrapping logic */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
