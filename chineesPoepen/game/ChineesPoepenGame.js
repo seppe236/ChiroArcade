@@ -135,7 +135,7 @@ function updateBoardTotals(boardGrid, rows, columns) {
       let total = aboveValue;
 
       console.log(leftValue);
-      if (leftValue === -1 && rightValue === -1) {
+      if (leftValue === -1 || rightValue === -1) {
         total = "";
       } else if (leftValue === rightValue) {
         total += 5 + leftValue * 3;
