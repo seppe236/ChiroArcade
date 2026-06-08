@@ -59,8 +59,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   requestFullscreenBtn.addEventListener("click", onRequestFullscreenClick);
   startGameBtn.addEventListener("click", onStartGameClick);
   quitGameBtn.addEventListener("click", onQuitGameClick);
-  nextPlayerBtn.addEventListener("click", onNextPlayerClick);
-  quitGameBtn.addEventListener("click", onQuitGameClick);
 
   if (!document.documentElement.requestFullscreen) {
     requestFullscreenBtn.classList.add("hidden");
@@ -78,11 +76,46 @@ window.addEventListener("DOMContentLoaded", async () => {
   await Promise.race([fetchPromise, quickStart]);
 
   if (!fetchedWords.length) fetchedWords = fallbackWords;
-  setupNewGame();
+  await setupNewGame();
   hideLoadingOverlay();
 
   fetchPromise.catch(() => {});
 });
+
+async function loadPlayedWords() {
+  try {
+    const response = await fetch(
+      `${FIREBASE_DB_URL}/imposter/playedWords.json`,
+    );
+    if (!response.ok)
+      throw new Error("Netwerkfout bij ophalen gespeelde woorden");
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.warn(
+      "Kon gespeelde woorden niet ophalen van Firebase, fallback offline gebruiken:",
+      error,
+    );
+    return JSON.parse(localStorage.getItem("imposterPlayedWords") || "[]");
+  }
+}
+
+async function savePlayedWords(playedWords) {
+  try {
+    await fetch(`${FIREBASE_DB_URL}/imposter/playedWords.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(playedWords),
+    });
+  } catch (error) {
+    console.warn(
+      "Kon gespeelde woorden niet naar Firebase wegschrijven, lokaal fallback opslaan:",
+      error,
+    );
+    localStorage.setItem("imposterPlayedWords", JSON.stringify(playedWords));
+  }
+}
 
 // --- LIVE DATA OPHALEN UIT FIREBASE ---
 async function loadWordsFromFirebase() {
@@ -107,10 +140,9 @@ async function loadWordsFromFirebase() {
   }
 }
 
-function setupNewGame() {
+async function setupNewGame() {
   // 1. Haal de geschiedenis van gespeelde woorden op
-  let playedWords =
-    JSON.parse(localStorage.getItem("imposterPlayedWords")) || [];
+  let playedWords = await loadPlayedWords();
 
   // 2. Filter de woorden die al in de geschiedenis staan eruit
   let availableWords = fetchedWords.filter(
@@ -139,8 +171,7 @@ function setupNewGame() {
     playedWords.shift(); // Verwijder het alleroudste woord
   }
 
-  // Sla de bijgewerkte geschiedenis op in localStorage
-  localStorage.setItem("imposterPlayedWords", JSON.stringify(playedWords));
+  await savePlayedWords(playedWords);
 
   // --- De rest van je originele logica blijft hetzelfde ---
 
