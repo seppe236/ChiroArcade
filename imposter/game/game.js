@@ -21,6 +21,9 @@ let roleTitle;
 let roleWord;
 let roleHint;
 let nextPlayerBtn;
+let startScreen;
+let requestFullscreenBtn;
+let startGameBtn;
 let quitGameBtn;
 let loadingOverlay;
 
@@ -46,11 +49,22 @@ window.addEventListener("DOMContentLoaded", async () => {
   roleWord = document.getElementById("roleWord");
   roleHint = document.getElementById("roleHint");
   nextPlayerBtn = document.getElementById("nextPlayerBtn");
+  startScreen = document.getElementById("startScreen");
+  requestFullscreenBtn = document.getElementById("requestFullscreenBtn");
+  startGameBtn = document.getElementById("startGameBtn");
   quitGameBtn = document.getElementById("quitGameBtn");
 
   roleCard.addEventListener("click", onRoleCardClick);
   nextPlayerBtn.addEventListener("click", onNextPlayerClick);
+  requestFullscreenBtn.addEventListener("click", onRequestFullscreenClick);
+  startGameBtn.addEventListener("click", onStartGameClick);
   quitGameBtn.addEventListener("click", onQuitGameClick);
+  nextPlayerBtn.addEventListener("click", onNextPlayerClick);
+  quitGameBtn.addEventListener("click", onQuitGameClick);
+
+  if (!document.documentElement.requestFullscreen) {
+    requestFullscreenBtn.classList.add("hidden");
+  }
 
   if (gamePlayers.length < 3) {
     alert("Niet genoeg spelers gevonden! Je keert terug naar het menu.");
@@ -178,6 +192,22 @@ function setCardGlowPaused(paused) {
   roleCard.classList.toggle("animation-paused", paused);
 }
 
+function onRequestFullscreenClick() {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement
+      .requestFullscreen()
+      .catch(() => {})
+      .finally(() => requestFullscreenBtn.classList.add("hidden"));
+  } else {
+    requestFullscreenBtn.classList.add("hidden");
+  }
+}
+
+function onStartGameClick() {
+  startScreen.classList.add("hidden");
+  document.querySelector("main").classList.remove("hidden");
+}
+
 // --- TIKKEN OM KAART OM TE DRAAIEN ---
 function onRoleCardClick() {
   if (!isCardFlipped) {
@@ -226,12 +256,3 @@ function onQuitGameClick(e) {
     window.location.href = "../imposter.html";
   }
 }
-
-document.addEventListener("pointerdown", (event) => {
-  // Request fullscreen on first card flip
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen().catch(() => {
-      // Fullscreen request failed, continue anyway
-    });
-  }
-});

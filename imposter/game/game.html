@@ -26,7 +26,23 @@
       <div class="spacer"></div>
     </header>
 
-    <main>
+    <div id="startScreen" class="start-screen">
+      <div class="start-screen-card">
+        <h2>Welkom bij Imposter</h2>
+        <p>
+          Wil je in volledig scherm spelen? Je kunt ook zonder fullscreen
+          verder.
+        </p>
+        <button id="requestFullscreenBtn" class="btn btn-play">
+          Volledig scherm
+        </button>
+        <button id="startGameBtn" class="btn btn-play secondary">
+          Start spel
+        </button>
+      </div>
+    </div>
+
+    <main class="hidden">
       <div class="game-info">
         <p id="progressDisplay" class="progress-text">Speler 1 van X</p>
         <h2 class="turn-text">Geef de gsm aan:</h2>
