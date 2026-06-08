@@ -561,6 +561,13 @@ main {
   box-shadow: 0 0 15px rgba(254, 35, 51, 0.1);
 }
 
+.flip-card.animation-paused .flip-card-front::before,
+.flip-card.animation-paused .flip-card-front::after,
+.flip-card.animation-paused .flip-card-back::before,
+.flip-card.animation-paused .flip-card-back::after {
+  animation-play-state: paused !important;
+}
+
 /* --- PLAY BUTTON --- */
 .btn {
   border: none;

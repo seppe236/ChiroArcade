@@ -13,6 +13,17 @@ let currentWord = "";
 let currentHint = "";
 let isCardFlipped = false;
 
+let progressDisplay;
+let currentPlayerDisplay;
+let roleCard;
+let cardBack;
+let roleTitle;
+let roleWord;
+let roleHint;
+let nextPlayerBtn;
+let quitGameBtn;
+let loadingOverlay;
+
 // Fallback woorden mocht Firebase leeg zijn of offline zijn
 const fallbackWords = [
   { word: "Pannenkoek", hint: "Eten" },
@@ -20,15 +31,43 @@ const fallbackWords = [
   { word: "Zonnebril", hint: "Zomer" },
 ];
 
-window.addEventListener("load", async () => {
+function hideLoadingOverlay() {
+  loadingOverlay.style.opacity = "0";
+  setTimeout(() => loadingOverlay.classList.add("hidden"), 400);
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  loadingOverlay = document.getElementById("loadingScreen");
+  progressDisplay = document.getElementById("progressDisplay");
+  currentPlayerDisplay = document.getElementById("currentPlayerDisplay");
+  roleCard = document.getElementById("roleCard");
+  cardBack = document.getElementById("cardBack");
+  roleTitle = document.getElementById("roleTitle");
+  roleWord = document.getElementById("roleWord");
+  roleHint = document.getElementById("roleHint");
+  nextPlayerBtn = document.getElementById("nextPlayerBtn");
+  quitGameBtn = document.getElementById("quitGameBtn");
+
+  roleCard.addEventListener("click", onRoleCardClick);
+  nextPlayerBtn.addEventListener("click", onNextPlayerClick);
+  quitGameBtn.addEventListener("click", onQuitGameClick);
+
   if (gamePlayers.length < 3) {
     alert("Niet genoeg spelers gevonden! Je keert terug naar het menu.");
     window.location.href = "../imposter.html";
     return;
   }
 
-  await loadWordsFromFirebase();
+  fetchedWords = fallbackWords;
+  const fetchPromise = loadWordsFromFirebase();
+  const quickStart = new Promise((resolve) => setTimeout(resolve, 200));
+  await Promise.race([fetchPromise, quickStart]);
+
+  if (!fetchedWords.length) fetchedWords = fallbackWords;
   setupNewGame();
+  hideLoadingOverlay();
+
+  fetchPromise.catch(() => {});
 });
 
 // --- LIVE DATA OPHALEN UIT FIREBASE ---
@@ -51,11 +90,6 @@ async function loadWordsFromFirebase() {
   } catch (error) {
     console.error("Firebase fetch mislukt, switch naar fallback:", error);
     fetchedWords = fallbackWords;
-  } finally {
-    // Verberg het laadscherm op een vloeiende manier
-    const loader = document.getElementById("loadingScreen");
-    loader.style.opacity = "0";
-    setTimeout(() => loader.classList.add("hidden"), 400);
   }
 }
 
@@ -113,93 +147,87 @@ function setupNewGame() {
 
 function updateGameScreen() {
   // Voortgangsindicator bijwerken
-  document.getElementById("progressDisplay").textContent =
-    `Speler ${currentPlayerGameIndex + 1} van ${gamePlayers.length}`;
+  progressDisplay.textContent = `Speler ${currentPlayerGameIndex + 1} van ${gamePlayers.length}`;
 
   // Naam tonen
   const player = gamePlayers[currentPlayerGameIndex];
-  document.getElementById("currentPlayerDisplay").textContent = player;
-
-  // Vul alvast de achterkant in van de kaart die nu stil face-down ligt
-  const backEl = document.getElementById("cardBack");
-  const titleEl = document.getElementById("roleTitle");
-  const wordEl = document.getElementById("roleWord");
-  const hintEl = document.getElementById("roleHint");
+  currentPlayerDisplay.textContent = player;
 
   const isImposter = imposterIndices.includes(currentPlayerGameIndex);
 
   if (isImposter) {
-    backEl.classList.add("imposter-bg");
-    titleEl.textContent = "Jij bent een";
-    wordEl.textContent = "IMPOSTER";
+    cardBack.classList.add("imposter-bg");
+    roleTitle.textContent = "Jij bent een";
+    roleWord.textContent = "IMPOSTER";
 
     if (currentHint) {
-      hintEl.textContent = "Hint: " + currentHint;
-      hintEl.classList.remove("hidden");
+      roleHint.textContent = "Hint: " + currentHint;
+      roleHint.classList.remove("hidden");
     } else {
-      hintEl.classList.add("hidden");
+      roleHint.classList.add("hidden");
     }
   } else {
-    backEl.classList.remove("imposter-bg");
-    titleEl.textContent = "Jouw woord is:";
-    wordEl.textContent = currentWord;
-    hintEl.classList.add("hidden");
+    cardBack.classList.remove("imposter-bg");
+    roleTitle.textContent = "Jouw woord is:";
+    roleWord.textContent = currentWord;
+    roleHint.classList.add("hidden");
   }
 }
 
+function setCardGlowPaused(paused) {
+  roleCard.classList.toggle("animation-paused", paused);
+}
+
 // --- TIKKEN OM KAART OM TE DRAAIEN ---
-document.getElementById("roleCard").addEventListener("click", function () {
+function onRoleCardClick() {
   if (!isCardFlipped) {
-    this.classList.add("flipped");
+    setCardGlowPaused(true);
+    roleCard.classList.add("flipped");
     isCardFlipped = true;
+
     setTimeout(() => {
-      const btn = document.getElementById("nextPlayerBtn");
-      if (currentPlayerGameIndex === gamePlayers.length - 1) {
-        btn.textContent = "Start Discussie";
-      } else {
-        btn.textContent = "Volgende Speler";
-      }
-      btn.classList.remove("hidden");
-    }, 400);
+      setCardGlowPaused(false);
+      nextPlayerBtn.textContent =
+        currentPlayerGameIndex === gamePlayers.length - 1
+          ? "Start Discussie"
+          : "Volgende Speler";
+      nextPlayerBtn.classList.remove("hidden");
+    }, 700);
   }
-});
+}
 
 // --- VOLGENDE SPELER KNOP (MET ANTI-SPOILER TIMEOUT) ---
-document.getElementById("nextPlayerBtn").addEventListener("click", function () {
+function onNextPlayerClick() {
   if (currentPlayerGameIndex < gamePlayers.length - 1) {
-    const card = document.getElementById("roleCard");
-
-    // 1. Draai eerst de kaart terug naar de anonieme voorkant
-    card.classList.remove("flipped");
+    setCardGlowPaused(true);
+    roleCard.classList.remove("flipped");
     isCardFlipped = false;
+    nextPlayerBtn.classList.add("hidden");
 
-    // Verberg de knop direct
-    this.classList.add("hidden");
-
-    // 2. Pas NA de animatie (600ms) de data aan voor de volgende speler
     setTimeout(() => {
+      setCardGlowPaused(false);
       currentPlayerGameIndex++;
       updateGameScreen();
-    }, 600);
+    }, 700);
   } else {
     alert(
       "Iedereen heeft zijn rol gezien! De gsm mag op tafel. De discussie begint!",
     );
     window.location.href = "../imposter.html";
   }
-});
+}
 
 // --- AFBREKEN ---
-document.getElementById("quitGameBtn").addEventListener("click", function (e) {
+function onQuitGameClick(e) {
   if (!confirm("Weet je zeker dat je het huidige spel wilt stoppen?")) {
     e.preventDefault();
   } else {
     localStorage.removeItem("currentImposterCount");
     window.location.href = "../imposter.html";
   }
-});
+}
 
-window.addEventListener("load", (event) => {
+document.addEventListener("pointerdown", (event) => {
   // Request fullscreen on first card flip
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch(() => {
