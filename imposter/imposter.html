@@ -67,6 +67,21 @@
         </label>
       </div>
 
+      <div class="settings-row" id="hintLimitRow" style="display: none;">
+        <span class="settings-label">Enkel hint voor eerste X spelers</span>
+        <div class="counter-control">
+          <label class="switch" style="margin-right: 8px;">
+            <input type="checkbox" id="hintLimitToggle" />
+            <span class="slider"></span>
+          </label>
+          <div id="hintLimitCounterWrapper" style="display: none; align-items: center; gap: 12px;">
+            <button class="btn-counter" onclick="decrementHintLimit()">−</button>
+            <input type="number" id="hintLimitCount" value="1" min="1" readonly />
+            <button class="btn-counter" onclick="incrementHintLimit()">+</button>
+          </div>
+        </div>
+      </div>
+
       <button class="btn btn-play" onclick="startGame()">Start Spel</button>
     </main>
 

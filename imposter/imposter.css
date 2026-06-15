@@ -305,7 +305,8 @@ input:checked + .slider:before {
 .btn-counter:active {
   transform: scale(0.95);
 }
-#imposterCount {
+#imposterCount,
+#hintLimitCount {
   width: 50px;
   height: 40px;
   text-align: center;
@@ -318,7 +319,9 @@ input:checked + .slider:before {
   padding: 0;
 }
 #imposterCount::-webkit-outer-spin-button,
-#imposterCount::-webkit-inner-spin-button {
+#imposterCount::-webkit-inner-spin-button,
+#hintLimitCount::-webkit-outer-spin-button,
+#hintLimitCount::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }

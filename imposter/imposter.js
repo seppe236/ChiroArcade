@@ -19,11 +19,79 @@ window.addEventListener("load", () => {
   if (savedImposterCount !== null) {
     document.getElementById("imposterCount").value = savedImposterCount;
   }
+
+  const savedHintLimitEnabled = localStorage.getItem("imposterHintLimitEnabled");
+  if (savedHintLimitEnabled !== null) {
+    document.getElementById("hintLimitToggle").checked = savedHintLimitEnabled === "true";
+  }
+
+  const savedHintLimitCount = localStorage.getItem("imposterHintLimitCount");
+  if (savedHintLimitCount !== null) {
+    document.getElementById("hintLimitCount").value = savedHintLimitCount;
+  }
+
+  updateHintLimitVisibility();
+  validateHintLimitCount();
 });
 
 document.getElementById("hintToggle").addEventListener("change", function () {
   localStorage.setItem("imposterHintState", this.checked);
+  updateHintLimitVisibility();
 });
+
+document.getElementById("hintLimitToggle").addEventListener("change", function () {
+  localStorage.setItem("imposterHintLimitEnabled", this.checked);
+  updateHintLimitVisibility();
+});
+
+function updateHintLimitVisibility() {
+  const hintEnabled = document.getElementById("hintToggle").checked;
+  const limitEnabled = document.getElementById("hintLimitToggle").checked;
+  const limitRow = document.getElementById("hintLimitRow");
+  const counterWrapper = document.getElementById("hintLimitCounterWrapper");
+
+  if (hintEnabled) {
+    limitRow.style.display = "flex";
+    if (limitEnabled) {
+      counterWrapper.style.display = "flex";
+    } else {
+      counterWrapper.style.display = "none";
+    }
+  } else {
+    limitRow.style.display = "none";
+    counterWrapper.style.display = "none";
+  }
+}
+
+function validateHintLimitCount() {
+  const input = document.getElementById("hintLimitCount");
+  if (!input) return;
+  const currentValue = parseInt(input.value) || 1;
+  const maxVal = Math.max(1, players.length);
+  if (currentValue > maxVal) {
+    input.value = maxVal;
+    localStorage.setItem("imposterHintLimitCount", maxVal);
+  }
+}
+
+function incrementHintLimit() {
+  const input = document.getElementById("hintLimitCount");
+  const currentValue = parseInt(input.value) || 1;
+  const maxVal = Math.max(1, players.length);
+  if (currentValue < maxVal) {
+    input.value = currentValue + 1;
+    localStorage.setItem("imposterHintLimitCount", input.value);
+  }
+}
+
+function decrementHintLimit() {
+  const input = document.getElementById("hintLimitCount");
+  const currentValue = parseInt(input.value) || 1;
+  if (currentValue > 1) {
+    input.value = currentValue - 1;
+    localStorage.setItem("imposterHintLimitCount", input.value);
+  }
+}
 
 function incrementImposters() {
   const input = document.getElementById("imposterCount");
@@ -71,6 +139,7 @@ function removeSinglePlayer(index) {
 }
 
 function updatePlayerList() {
+  validateHintLimitCount();
   const ul = document.getElementById("playerList");
   ul.innerHTML = "";
 

@@ -5,6 +5,8 @@ const FIREBASE_DB_URL =
 let gamePlayers = JSON.parse(localStorage.getItem("imposterPlayers")) || [];
 let hintEnabled = localStorage.getItem("imposterHintState") === "true";
 let imposterCount = parseInt(localStorage.getItem("currentImposterCount")) || 1;
+let hintLimitEnabled = localStorage.getItem("imposterHintLimitEnabled") === "true";
+let hintLimitCount = parseInt(localStorage.getItem("imposterHintLimitCount")) || 1;
 
 let fetchedWords = [];
 let imposterIndices = [];
@@ -173,9 +175,16 @@ async function setupNewGame() {
 
   await savePlayedWords(playedWords);
 
-  // --- De rest van je originele logica blijft hetzelfde ---
+  // 7. Kies een willekeurige startende speler en verschuif de spelerslijst (shift/rotate)
+  if (gamePlayers.length > 0) {
+    const startIdx = Math.floor(Math.random() * gamePlayers.length);
+    gamePlayers = [
+      ...gamePlayers.slice(startIdx),
+      ...gamePlayers.slice(0, startIdx)
+    ];
+  }
 
-  // 7. Bepaal random imposters
+  // 8. Bepaal random imposters
   imposterIndices = [];
   const availableIndices = gamePlayers.map((_, i) => i);
 
@@ -185,7 +194,7 @@ async function setupNewGame() {
     availableIndices.splice(randomPos, 1);
   }
 
-  // 8. Bepaal een random startende speler
+  // 9. Start bij de eerste speler in de verschoven lijst (de gekozen startspeler)
   currentPlayerGameIndex = 0;
   updateGameScreen();
 }
@@ -205,7 +214,14 @@ function updateGameScreen() {
     roleTitle.textContent = "Jij bent een";
     roleWord.textContent = "IMPOSTER";
 
-    if (currentHint) {
+    let showHint = hintEnabled;
+    if (showHint && hintLimitEnabled) {
+      if (currentPlayerGameIndex >= hintLimitCount) {
+        showHint = false;
+      }
+    }
+
+    if (showHint && currentHint) {
       roleHint.textContent = "Hint: " + currentHint;
       roleHint.classList.remove("hidden");
     } else {
