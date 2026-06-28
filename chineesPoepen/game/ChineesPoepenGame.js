@@ -2,10 +2,61 @@ window.addEventListener("load", () => {
   renderGameGrid();
 });
 
+function getSavedGameState(players, roundCount) {
+  const savedState = JSON.parse(
+    localStorage.getItem("chineesPoepenGameState"),
+  );
+
+  if (!savedState || !Array.isArray(savedState.players)) {
+    return null;
+  }
+
+  const savedPlayers = savedState.players;
+  const savedRoundCount = Number(savedState.roundCount);
+
+  if (
+    savedPlayers.length !== players.length ||
+    savedRoundCount !== roundCount ||
+    savedPlayers.some((name, index) => name !== players[index])
+  ) {
+    return null;
+  }
+
+  return savedState;
+}
+
+function saveGameState(boardGrid, players, roundCount) {
+  const cells = [];
+  const rows = Math.max(1, roundCount) * 2 - 1;
+
+  for (let row = 1; row <= rows; row += 1) {
+    for (let col = 1; col <= players.length; col += 1) {
+      const cell = boardGrid.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
+      if (!cell) continue;
+
+      const leftInput = cell.querySelector(".cell-top input:first-of-type");
+      const rightInput = cell.querySelector(".cell-top input:last-of-type");
+
+      cells.push({
+        row,
+        col,
+        left: leftInput?.value || "",
+        right: rightInput?.value || "",
+      });
+    }
+  }
+
+  localStorage.setItem(
+    "chineesPoepenGameState",
+    JSON.stringify({ players, roundCount, cells }),
+  );
+}
+
 function renderGameGrid() {
   const players =
     JSON.parse(localStorage.getItem("chineesPoepenPlayers")) || [];
   const roundCount = Number(localStorage.getItem("chineesPoepenRounds")) || 4;
+  const savedState = getSavedGameState(players, roundCount);
   const gridContainer = document.getElementById("gridContainer");
   const message = document.getElementById("gameMessage");
 
@@ -68,17 +119,21 @@ function renderGameGrid() {
       const cellTop = document.createElement("div");
       cellTop.className = "cell-top";
 
+      const savedCell = savedState?.cells?.find(
+        (cell) => cell.row === r && cell.col === c,
+      );
+
       const topA = document.createElement("input");
       topA.type = "text";
       topA.maxLength = 3;
-      topA.value = "";
+      topA.value = savedCell?.left ?? "";
       topA.inputMode = "numeric";
       topA.pattern = "[0-9]*";
 
       const topB = document.createElement("input");
       topB.type = "text";
       topB.maxLength = 3;
-      topB.value = "";
+      topB.value = savedCell?.right ?? "";
       topB.inputMode = "numeric";
       topB.pattern = "[0-9]*";
 
@@ -91,7 +146,10 @@ function renderGameGrid() {
       mainText.textContent = "0";
       cell.appendChild(mainText);
 
-      const updateInputs = () => updateBoardTotals(boardGrid, rows, columns);
+      const updateInputs = () => {
+        updateBoardTotals(boardGrid, rows, columns);
+        saveGameState(boardGrid, players, roundCount);
+      };
       topA.addEventListener("input", updateInputs);
       topB.addEventListener("input", updateInputs);
 
@@ -103,6 +161,7 @@ function renderGameGrid() {
   gridContainer.innerHTML = "";
   gridContainer.appendChild(boardGrid);
   updateBoardTotals(boardGrid, rows, columns);
+  saveGameState(boardGrid, players, roundCount);
 }
 
 function updateBoardTotals(boardGrid, rows, columns) {

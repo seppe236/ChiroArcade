@@ -2,6 +2,7 @@
 let players = JSON.parse(localStorage.getItem("chineesPoepenPlayers")) || [];
 const MAX_PLAYERS = 12;
 const MAX_ROUNDS = 20;
+const SCORE_STORAGE_KEY = "chineesPoepenGameState";
 
 window.addEventListener("load", () => {
   updatePlayerList();
@@ -15,6 +16,10 @@ function savePlayers() {
   localStorage.setItem("chineesPoepenPlayers", JSON.stringify(players));
 }
 
+function clearSavedScores() {
+  localStorage.removeItem(SCORE_STORAGE_KEY);
+}
+
 function addPlayer() {
   const input = document.getElementById("playerName");
   const name = input.value.trim();
@@ -25,6 +30,7 @@ function addPlayer() {
 
   players.push(name);
   savePlayers();
+  clearSavedScores();
   updatePlayerList();
   input.value = "";
   input.focus();
@@ -33,12 +39,14 @@ function addPlayer() {
 function clearPlayers() {
   players = [];
   savePlayers();
+  clearSavedScores();
   updatePlayerList();
 }
 
 function removeSinglePlayer(index) {
   players.splice(index, 1);
   savePlayers();
+  clearSavedScores();
   updatePlayerList();
 }
 
@@ -221,5 +229,6 @@ function swapItems(fromIndex, toIndex) {
   const itemToMove = players.splice(fromIndex, 1)[0];
   players.splice(toIndex, 0, itemToMove);
   savePlayers();
+  clearSavedScores();
   updatePlayerList();
 }
