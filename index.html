@@ -1,115 +1,116 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game Select</title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Select</title>
 
-    <style>
-      :root {
-        --bg-color: #04070f;
-        --accent-color: #fe2333;
-        --text-color: #ffffff;
-      }
+  <link rel="stylesheet"
+    href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" />
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
+  <style>
+    :root {
+      --bg-color: #04070f;
+      --accent-color: #fe2333;
+      --text-color: #ffffff;
+    }
 
-      body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 20px;
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 50px;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        font-weight: 800;
-      }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-      .game-container {
-        display: flex;
-        gap: 40px;
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 800px;
-      }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 800;
+    }
 
-      .game-card {
-        background-color: rgba(255, 255, 255, 0.03);
-        border: 2px solid var(--accent-color);
-        border-radius: 16px;
-        width: 240px;
-        padding: 40px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: var(--text-color);
-      }
+    .game-container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 800px;
+    }
 
-      .game-card:hover {
-        background-color: var(--accent-color);
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(254, 35, 51, 0.4);
-      }
+    .game-card {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 2px solid var(--accent-color);
+      border-radius: 16px;
+      width: 240px;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--text-color);
+    }
 
-      .icon {
-        font-size: 40px;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 24px;
-        color: var(--text-color);
-        transition: transform 0.3s ease;
-      }
+    .game-card:hover {
+      background-color: var(--accent-color);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(254, 35, 51, 0.4);
+    }
 
-      .game-card:hover .icon {
-        transform: scale(1.1);
-      }
+    .icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: var(--text-color);
+      transition: transform 0.3s ease;
+    }
 
-      .game-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: capitalize;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Select Game</h1>
+    .game-card:hover .icon {
+      transform: scale(1.1);
+    }
 
-    <div class="game-container">
-      <a href="imposter/imposter.html" class="game-card">
-        <i class="fi fi-rr-ghost icon"></i>
-        <div class="game-title">Imposter</div>
-      </a>
+    .game-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: capitalize;
+    }
+  </style>
+</head>
 
-      <a href="chineesPoepen/ChineesPoepen.html" class="game-card">
-        <i class="fi fi-rr-playing-cards icon"></i>
-        <div class="game-title">Chinees Poepen</div>
-      </a>
-    </div>
-  </body>
+<body>
+  <h1>Select Game</h1>
+
+  <div class="game-container">
+    <a href="imposter/imposter.html" class="game-card">
+      <i class="fi fi-rr-ghost icon"></i>
+      <div class="game-title">Imposter</div>
+    </a>
+
+    <a href="chineesPoepen/ChineesPoepen.html" class="game-card">
+      <i class="fi fi-rr-playing-cards icon"></i>
+      <div class="game-title">Chinees Poepen</div>
+    </a>
+  </div>
+</body>
+
 </html>

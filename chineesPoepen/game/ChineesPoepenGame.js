@@ -139,7 +139,7 @@ function updateBoardTotals(boardGrid, rows, columns) {
         total = "";
       } else if (leftValue === rightValue) {
         total += 5 + leftValue * 3;
-      } else if (leftValue !== rightValue && leftValue !== 0) {
+      } else if (leftValue !== rightValue) {
         total -= Math.abs(leftValue - rightValue) * 3;
       }
 
